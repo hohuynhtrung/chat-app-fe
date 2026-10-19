@@ -1,15 +1,26 @@
-import { ROUTES } from "@/config/routes.const";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { ROUTES } from "@/config/routes.const";
+import { login } from "@/service/auth/authService";
+import { useAppDispatch, useAuth } from "@/features/auth/hook";
+
 function Login() {
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAuth();
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", { email, password });
+    const result = await dispatch(login({ email, password }));
+
+    if (login.fulfilled.match(result)) {
+      console.log("Đăng nhập thành công:", result.payload);
+      // Chuyển hướng trang (ví dụ: navigate('/dashboard'))
+    }
   };
 
   return (
@@ -17,6 +28,12 @@ function Login() {
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
         Đăng nhập
       </h2>
+
+      {error && (
+        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
@@ -66,9 +83,10 @@ function Login() {
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-offset-gray-800"
+          disabled={loading}
+          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600"
         >
-          Đăng nhập
+          {loading ? "Đang xử lý..." : "Đăng nhập"}
         </button>
       </form>
     </div>

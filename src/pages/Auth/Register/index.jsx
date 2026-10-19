@@ -1,16 +1,30 @@
-import { ROUTES } from "@/config/routes.const";
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+
+import { ROUTES } from "@/config/routes.const";
+import { useAppDispatch, useAuth } from "@/features/auth/hook";
+import { register } from "@/service/auth/authService";
 
 function Register() {
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAuth();
+
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register:", { name, email, password });
+    // Chú ý key "username" đúng với định dạng backend yêu cầu
+    const result = await dispatch(
+      register({ username: name, email, password }),
+    );
+
+    if (register.fulfilled.match(result)) {
+      console.log("Đăng ký thành công:", result.payload);
+      // Chuyển hướng trang
+    }
   };
 
   return (
@@ -19,10 +33,16 @@ function Register() {
         Đăng ký tài khoản
       </h2>
 
+      {error && (
+        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Họ và tên
+            Tên người dùng
           </label>
           <input
             type="text"
@@ -30,7 +50,7 @@ function Register() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 sm:text-sm"
-            placeholder="Nguyễn Văn A"
+            placeholder="Họ và Tên"
           />
         </div>
 
@@ -44,7 +64,7 @@ function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 sm:text-sm"
-            placeholder="you@example.com"
+            placeholder="Nhập email của bạn"
           />
         </div>
 
@@ -58,7 +78,7 @@ function Register() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 pr-12 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 sm:text-sm"
-            placeholder="••••••••"
+            placeholder="Nhập mật khẩu của bạn"
           />
           <button
             type="button"
@@ -81,9 +101,10 @@ function Register() {
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-offset-gray-800"
+          disabled={loading}
+          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600"
         >
-          Đăng ký
+          {loading ? "Đang xử lý..." : "Đăng ký"}
         </button>
       </form>
     </div>

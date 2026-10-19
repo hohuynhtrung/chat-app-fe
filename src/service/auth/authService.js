@@ -1,30 +1,46 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import http from "@/utils/http";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const login = createAsyncThunk(
-  "auth/login",
-  async (data, { rejectWithValue }) => {
+// Đăng ký
+export const register = createAsyncThunk(
+  "auth/register",
+  async (credentials, { rejectWithValue }) => {
     try {
-      const response = await http("/auth/login", data);
-      return response;
+      const response = await http.post("/auth/register", credentials);
+      const { accessToken, user } = response.data || response;
+
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      return { accessToken, user };
     } catch (error) {
-      return rejectWithValue(
-        error.message.data.message || "Đăng nhập thất bại",
-      );
+      const message =
+        error.response?.data?.message || error.message || "Đăng ký thất bại";
+      return rejectWithValue(message);
     }
   },
 );
 
-export const register = createAsyncThunk(
-  "auth/register",
-  async (data, { rejectWithValue }) => {
+// Đăng nhập
+export const login = createAsyncThunk(
+  "auth/login",
+  async (credentials, { rejectWithValue }) => {
     try {
-      const response = await http.post("/auth/register", data);
-      return response;
+      const response = await http.post("/auth/login", credentials);
+      const { accessToken, user } = response.data || response;
+
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      return { accessToken, user };
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Register failed",
-      );
+      const message =
+        error.response?.data?.message || error.message || "Đăng nhập thất bại";
+      return rejectWithValue(message);
     }
   },
 );
