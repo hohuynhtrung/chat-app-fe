@@ -6,6 +6,7 @@ import Login from "@/pages/Auth/Login";
 import ChatPvsP from "@/pages/ChatPvsP";
 import Register from "@/pages/Auth/Register";
 import { ROUTES } from "@/config/routes.const";
+import GuestRoute from "@/components/GuestRoute";
 
 function AppRoutes() {
   return (
@@ -15,9 +16,11 @@ function AppRoutes() {
         <Route path={ROUTES.CHAT} element={<ChatPvsP />} />
       </Route>
 
-      <Route element={<AuthLayout />}>
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+      <Route element={<GuestRoute />}>
+        <Route element={<AuthLayout />}>
+          <Route path={ROUTES.LOGIN} element={<Login />} />
+          <Route path={ROUTES.REGISTER} element={<Register />} />
+        </Route>
       </Route>
     </Routes>
   );

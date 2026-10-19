@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@/config/routes.const";
 import { login } from "@/service/auth/authService";
@@ -9,6 +9,7 @@ function Login() {
   const dispatch = useAppDispatch();
   const { loading, error } = useAuth();
 
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +20,7 @@ function Login() {
 
     if (login.fulfilled.match(result)) {
       console.log("Đăng nhập thành công:", result.payload);
-      // Chuyển hướng trang (ví dụ: navigate('/dashboard'))
+      navigate("/");
     }
   };
 

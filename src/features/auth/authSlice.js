@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { login, register } from "@/service/auth/authService";
+import {
+  getCurrentUser,
+  login,
+  register,
+  logout,
+} from "@/service/auth/authService";
 
 // Lấy dữ liệu lưu trữ nếu người dùng đã đăng nhập trước đó
 const savedAccessToken = localStorage.getItem("accessToken") || null;
@@ -8,10 +13,11 @@ const savedUser = localStorage.getItem("user")
   : null;
 
 const initialState = {
-  user: savedUser,
+  currentUser: savedUser,
   accessToken: savedAccessToken,
   isAuthenticated: !!savedAccessToken,
   loading: false,
+  fetching: false,
   error: null,
 };
 
@@ -19,23 +25,13 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // Đăng xuất
-    logout(state) {
-      state.user = null;
-      state.accessToken = null;
-      state.isAuthenticated = false;
-      state.error = null;
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
-    },
-    // Clear lỗi khi chuyển trang hoặc tắt alert
     clearAuthError(state) {
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // ================= REGISTER =================
+      // Register
       .addCase(register.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -43,16 +39,22 @@ export const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.accessToken = action.payload.accessToken;
-        state.user = action.payload.user;
-        state.error = null;
+
+        const payloadData = action.payload.data || action.payload;
+
+        state.accessToken = payloadData.accessToken;
+        state.currentUser = payloadData.user; // 👈 Gán user cho cả register
+
+        if (payloadData.user) {
+          localStorage.setItem("user", JSON.stringify(payloadData.user));
+        }
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // ================= LOGIN =================
+      // Login
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -60,16 +62,40 @@ export const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.accessToken = action.payload.accessToken;
-        state.user = action.payload.user;
-        state.error = null;
+
+        // Dựa vào cấu trúc JSON của bạn: action.payload.data chứa accessToken và user
+        const payloadData = action.payload.data || action.payload;
+
+        state.accessToken = payloadData.accessToken;
+        state.currentUser = payloadData.user; // 👈 Gán user vào đây để Header nhận diện ngay lập tức!
+
+        // Lưu thêm vào localStorage nếu cần giữ trạng thái user
+        if (payloadData.user) {
+          localStorage.setItem("user", JSON.stringify(payloadData.user));
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Logout
+      .addCase(logout.pending, (state) => {
+        state.fetching = true;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.currentUser = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
+        state.error = null;
+      })
+      .addCase(logout.rejected, (state) => {
+        state.currentUser = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
       });
   },
 });
 
-export const { logout, clearAuthError } = authSlice.actions;
+export const { clearAuthError } = authSlice.actions;
 export default authSlice.reducer;
