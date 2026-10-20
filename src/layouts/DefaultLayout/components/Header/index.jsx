@@ -19,7 +19,7 @@ function Header() {
             to={ROUTES.CHAT}
             className="text-lg font-semibold text-gray-900 dark:text-white"
           >
-            Chat
+            Chat App
           </Link>
         </div>
 

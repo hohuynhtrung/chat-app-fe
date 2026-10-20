@@ -76,6 +76,14 @@ httpClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    const isAuthRelated =
+      originalRequest.url?.includes("/auth/") ||
+      originalRequest.url?.includes("/conversations");
+    if (status === 500 && isAuthRelated) {
+      handleForceLogout();
+      return Promise.reject(error);
+    }
+
     if (status !== 401 || originalRequest._retry) {
       return Promise.reject(error);
     }
