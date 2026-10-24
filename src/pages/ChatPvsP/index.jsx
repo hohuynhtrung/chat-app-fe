@@ -9,11 +9,11 @@ import {
   createDmConversation,
   getMessages,
   sendMessage,
-} from "@/service/chatpvsp/chatpvspService";
+} from "@/service/chat/chatService";
 import {
   setActiveConversation,
   addIncomingMessage,
-} from "@/features/conversation/conversationSlice";
+} from "@/features/chat/chatSlice";
 import pusher from "@/libs/pusher";
 import Header from "@/layouts/DefaultLayout/components/Header";
 

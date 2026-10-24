@@ -16,7 +16,7 @@ export const getConversations = createAsyncThunk(
   "chat/getConversations",
   async (_, { rejectWithValue }) => {
     try {
-      const conversations = unwrapResponse(await http.get("/conversations"));
+      const conversations = unwrapResponse(await http.get("/chat"));
       if (!Array.isArray(conversations)) {
         throw new Error("Danh sách hội thoại không hợp lệ");
       }
@@ -34,7 +34,7 @@ export const createDmConversation = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const conversation = unwrapResponse(
-        await http.post("/conversations", {
+        await http.post("/chat", {
           type: "dm",
           userId,
         }),
@@ -54,7 +54,7 @@ export const getMessages = createAsyncThunk(
   async (conversationId, { rejectWithValue }) => {
     try {
       const result = unwrapResponse(
-        await http.get(`/conversations/${conversationId}/messages`),
+        await http.get(`/chat/${conversationId}/messages`),
       );
       if (!Array.isArray(result?.items)) {
         throw new Error("Danh sách tin nhắn không hợp lệ");
@@ -71,7 +71,7 @@ export const sendMessage = createAsyncThunk(
   async ({ conversationId, content }, { rejectWithValue }) => {
     try {
       const message = unwrapResponse(
-        await http.post(`/conversations/${conversationId}/messages`, {
+        await http.post(`/chat/${conversationId}/messages`, {
           content,
         }),
       );

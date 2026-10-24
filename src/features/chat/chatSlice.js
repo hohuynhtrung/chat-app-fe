@@ -4,7 +4,7 @@ import {
   createDmConversation,
   getMessages,
   sendMessage,
-} from "@/service/chatpvsp/chatpvspService";
+} from "@/service/chat/chatService";
 
 const initialState = {
   conversations: [],
