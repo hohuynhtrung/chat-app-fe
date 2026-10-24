@@ -22,11 +22,11 @@ import pusher from "@/libs/pusher";
 
 import Header from "@/layouts/DefaultLayout/components/Header";
 
-import ConversationList from "@/layouts/DefaultLayout/components/chat/ConversationList";
-import ChatHeader from "@/layouts/DefaultLayout/components/chat/ChatHeader";
-import MessageList from "@/layouts/DefaultLayout/components/chat/MessageList";
-import MessageInput from "@/layouts/DefaultLayout/components/chat/MessageInput";
-import NewChatModal from "@/layouts/DefaultLayout/components/chat/NewChatModel";
+import ConversationList from "@/layouts/DefaultLayout/components/Chat/ConversationList";
+import ChatHeader from "@/layouts/DefaultLayout/components/Chat/ChatHeader";
+import MessageList from "@/layouts/DefaultLayout/components/Chat/MessageList";
+import MessageInput from "@/layouts/DefaultLayout/components/Chat/MessageInput";
+import NewChatModal from "@/layouts/DefaultLayout/components/Chat/NewChatModel";
 
 function ChatPvsP() {
   const dispatch = useAppDispatch();

@@ -11,6 +11,7 @@ import { ROUTES } from "@/config/routes.const";
 import GuestRoute from "@/components/GuestRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Profile from "@/pages/Profile";
+import Chatbot from "@/pages/Chatbot";
 
 function AppRoutes() {
   const currentUser = useCurrentUser();
@@ -30,6 +31,7 @@ function AppRoutes() {
             }
             element={<Profile />}
           />
+          <Route path={ROUTES.CHATBOT} element={<Chatbot />} />
         </Route>
       </Route>
 
