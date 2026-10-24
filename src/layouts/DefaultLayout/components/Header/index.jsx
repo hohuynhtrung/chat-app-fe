@@ -33,7 +33,7 @@ function Header() {
       <div className="mx-auto flex max-w-5xl items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
-            to={ROUTES.CHAT}
+            to={ROUTES.HOME}
             className="flex items-center gap-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm">
