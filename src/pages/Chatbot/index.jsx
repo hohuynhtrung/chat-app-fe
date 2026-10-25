@@ -29,21 +29,21 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
       <ChatbotHeader />
 
       {error && (
         <div
           role="alert"
-          className="flex items-start justify-between gap-3 border-b border-red-100 bg-red-50 px-5 py-3"
+          className="flex shrink-0 items-start justify-between gap-3 border-b border-red-100 bg-red-50 px-5 py-3 dark:border-red-900 dark:bg-red-950/50"
         >
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-[13px] text-red-600 dark:text-red-300">{error}</p>
 
           <button
             type="button"
             onClick={() => dispatch(clearChatbotError())}
             aria-label="Đóng thông báo lỗi"
-            className="shrink-0 text-red-500 hover:text-red-700"
+            className="shrink-0 text-red-500 hover:text-red-700 dark:text-red-300 dark:hover:text-red-100"
           >
             ✕
           </button>
