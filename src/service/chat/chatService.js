@@ -49,6 +49,29 @@ export const createDmConversation = createAsyncThunk(
   },
 );
 
+export const createGroupConversation = createAsyncThunk(
+  "chat/createGroupConversation",
+  async ({ name, memberIds }, { rejectWithValue }) => {
+    try {
+      const conversation = unwrapResponse(
+        await http.post("/chat", {
+          type: "group",
+          name,
+          memberIds,
+        }),
+      );
+      if (!conversation?.id) {
+        throw new Error("Dữ liệu hội thoại không hợp lệ");
+      }
+      return conversation;
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Không thể tạo nhóm chat"),
+      );
+    }
+  },
+);
+
 export const getMessages = createAsyncThunk(
   "chat/getMessages",
   async (conversationId, { rejectWithValue }) => {

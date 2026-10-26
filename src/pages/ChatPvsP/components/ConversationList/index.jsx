@@ -59,7 +59,9 @@ function ConversationList({
                   </h4>
 
                   <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
-                    Nhấn để xem tin nhắn
+                    {conversation.type === "group"
+                      ? `Nhóm · ${conversation.members?.length || 0} thành viên`
+                      : "Nhấn để xem tin nhắn"}
                   </p>
                 </div>
               </button>

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   getConversations,
   createDmConversation,
+  createGroupConversation,
   getMessages,
   sendMessage,
 } from "@/service/chat/chatService";
@@ -88,6 +89,30 @@ export const chatSlice = createSlice({
         state.messagesRequestId = null;
       })
       .addCase(createDmConversation.rejected, (state) => {
+        state.creatingConversation = false;
+      })
+
+      .addCase(createGroupConversation.pending, (state) => {
+        state.creatingConversation = true;
+        state.error = null;
+      })
+      .addCase(createGroupConversation.fulfilled, (state, action) => {
+        state.creatingConversation = false;
+        const conversation = action.payload;
+        const index = state.conversations.findIndex(
+          (item) => item.id === conversation.id,
+        );
+        if (index === -1) {
+          state.conversations.unshift(conversation);
+        } else {
+          state.conversations[index] = conversation;
+        }
+        state.activeConversation = conversation;
+        state.messages = [];
+        state.loadingMessages = false;
+        state.messagesRequestId = null;
+      })
+      .addCase(createGroupConversation.rejected, (state) => {
         state.creatingConversation = false;
       })
 

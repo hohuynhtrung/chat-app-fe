@@ -20,9 +20,16 @@ function ChatHeader({ conversation, getDisplayName, onBack }) {
           {displayName?.charAt(0).toUpperCase() || "?"}
         </div>
 
-        <h3 className="truncate text-sm font-bold text-gray-900 dark:text-white">
-          {displayName}
-        </h3>
+        <div className="min-w-0">
+          <h3 className="truncate text-sm font-bold text-gray-900 dark:text-white">
+            {displayName}
+          </h3>
+          {conversation.type === "group" && (
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {conversation.members?.length || 0} thành viên
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

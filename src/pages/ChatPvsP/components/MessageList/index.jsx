@@ -2,7 +2,13 @@ import { useEffect, useMemo, useRef } from "react";
 import MessageItem from "../MessageItem";
 import { getMessageDate } from "@/utils/messageTime";
 
-function MessageList({ messages, currentUserId, loading, conversationId }) {
+function MessageList({
+  messages,
+  currentUserId,
+  isGroup,
+  loading,
+  conversationId,
+}) {
   const messagesEndRef = useRef(null);
 
   // Sắp xếp tin nhắn theo thời gian tăng dần
@@ -47,6 +53,11 @@ function MessageList({ messages, currentUserId, loading, conversationId }) {
               message={message}
               previousMessage={previousMessage}
               isMe={message.senderId === currentUserId}
+              senderName={
+                isGroup && message.senderId !== currentUserId
+                  ? message.sender?.username
+                  : null
+              }
               isFirstMessage={index === 0}
             />
           );

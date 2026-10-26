@@ -5,7 +5,13 @@ import {
   shouldShowTimestamp,
 } from "@/utils/messageTime";
 
-function MessageItem({ message, previousMessage, isMe, isFirstMessage }) {
+function MessageItem({
+  message,
+  previousMessage,
+  isMe,
+  senderName,
+  isFirstMessage,
+}) {
   const messageDate = getMessageDate(message);
   const previousDate = getMessageDate(previousMessage);
 
@@ -27,10 +33,13 @@ function MessageItem({ message, previousMessage, isMe, isFirstMessage }) {
 
       <div className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
         <div
-          className={`relative flex max-w-[85%] items-center ${
-            isMe ? "flex-row-reverse" : "flex-row"
-          }`}
+          className="flex max-w-[85%] flex-col"
         >
+          {senderName && (
+            <span className="mb-1 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+              {senderName}
+            </span>
+          )}
           <div
             className={`group relative wrap-break-word whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
               isMe

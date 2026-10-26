@@ -9,6 +9,7 @@ import {
 import {
   getConversations,
   createDmConversation,
+  createGroupConversation,
   getMessages,
   sendMessage,
 } from "@/service/chat/chatService";
@@ -49,7 +50,10 @@ function ChatPvsP() {
 
   const [newMessage, setNewMessage] = useState("");
   const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [newChatType, setNewChatType] = useState("dm");
   const [otherUserId, setOtherUserId] = useState("");
+  const [groupName, setGroupName] = useState("");
+  const [groupMemberIds, setGroupMemberIds] = useState("");
   const [newChatError, setNewChatError] = useState("");
   const [showConversationList, setShowConversationList] = useState(true);
 
@@ -114,23 +118,55 @@ function ChatPvsP() {
   const handleCreateDm = async (e) => {
     e.preventDefault();
 
-    const userId = otherUserId.trim();
-
-    if (!userId || creatingConversation) {
-      return;
-    }
-
-    if (userId === currentUser?.id) {
-      setNewChatError("Bạn không thể tạo đoạn chat với chính mình.");
+    if (creatingConversation) {
       return;
     }
 
     setNewChatError("");
-    const action = await dispatch(createDmConversation(userId));
+    let action;
 
-    if (createDmConversation.fulfilled.match(action)) {
+    if (newChatType === "group") {
+      const memberIds = [
+        ...new Set(
+          groupMemberIds
+            .split(/[\n,]+/)
+            .map((id) => id.trim())
+            .filter((id) => id && id !== currentUser?.id),
+        ),
+      ];
+
+      if (memberIds.length < 2) {
+        setNewChatError("Nhập ID của ít nhất 2 thành viên khác nhau.");
+        return;
+      }
+
+      action = await dispatch(
+        createGroupConversation({
+          name: groupName.trim(),
+          memberIds,
+        }),
+      );
+    } else {
+      const userId = otherUserId.trim();
+      if (!userId) return;
+
+      if (userId === currentUser?.id) {
+        setNewChatError("Bạn không thể tạo đoạn chat với chính mình.");
+        return;
+      }
+
+      action = await dispatch(createDmConversation(userId));
+    }
+
+    if (
+      createDmConversation.fulfilled.match(action) ||
+      createGroupConversation.fulfilled.match(action)
+    ) {
       setShowNewChatModal(false);
+      setNewChatType("dm");
       setOtherUserId("");
+      setGroupName("");
+      setGroupMemberIds("");
       setShowConversationList(false);
     } else {
       setNewChatError(
@@ -142,7 +178,10 @@ function ChatPvsP() {
   // Đóng modal tạo hội thoại
   const handleCloseNewChat = () => {
     setShowNewChatModal(false);
+    setNewChatType("dm");
     setOtherUserId("");
+    setGroupName("");
+    setGroupMemberIds("");
     setNewChatError("");
   };
 
@@ -179,7 +218,10 @@ function ChatPvsP() {
             dispatch(setActiveConversation(conversation));
             setShowConversationList(false);
           }}
-          onNewChat={() => setShowNewChatModal(true)}
+          onNewChat={() => {
+            setNewChatError("");
+            setShowNewChatModal(true);
+          }}
         />
 
         {/* KHUNG CHAT */}
@@ -214,6 +256,7 @@ function ChatPvsP() {
               <MessageList
                 messages={safeMessages}
                 currentUserId={currentUser?.id}
+                isGroup={activeConversation.type === "group"}
                 loading={loadingMessages}
                 conversationId={activeConversation.id}
               />
@@ -236,9 +279,24 @@ function ChatPvsP() {
         {/* MODAL TẠO HỘI THOẠI */}
         <NewChatModal
           open={showNewChatModal}
+          type={newChatType}
+          onTypeChange={(type) => {
+            setNewChatType(type);
+            setNewChatError("");
+          }}
           userId={otherUserId}
           onUserIdChange={(value) => {
             setOtherUserId(value);
+            setNewChatError("");
+          }}
+          groupName={groupName}
+          onGroupNameChange={(value) => {
+            setGroupName(value);
+            setNewChatError("");
+          }}
+          groupMemberIds={groupMemberIds}
+          onGroupMemberIdsChange={(value) => {
+            setGroupMemberIds(value);
             setNewChatError("");
           }}
           onSubmit={handleCreateDm}
