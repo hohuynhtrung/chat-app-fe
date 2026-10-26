@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import ChatbotHeader from "@/pages/Chatbot/components/ChatbotHeader";
 import ChatbotMessages from "@/pages/Chatbot/components/ChatbotMessage";
 import ChatbotInput from "@/pages/Chatbot/components/ChatbotInput";
 
@@ -11,6 +10,7 @@ import {
   getChatbotMessages,
   sendChatbotMessage,
 } from "@/service/chatbot/chatbotService";
+import Header from "@/layouts/DefaultLayout/components/Header";
 
 const Chatbot = () => {
   const dispatch = useDispatch();
@@ -30,7 +30,7 @@ const Chatbot = () => {
 
   return (
     <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-      <ChatbotHeader />
+      <Header />
 
       {error && (
         <div

@@ -30,7 +30,9 @@ const markdownComponents = {
     </h3>
   ),
   p: ({ children }) => (
-    <p className="mb-2 last:mb-0 whitespace-pre-wrap break-words">{children}</p>
+    <p className="mb-2 last:mb-0 whitespace-pre-wrap wrap-break-word">
+      {children}
+    </p>
   ),
   ul: ({ children }) => (
     <ul className="mb-2 list-disc space-y-1 pl-5 last:mb-0">{children}</ul>

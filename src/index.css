@@ -8,4 +8,11 @@ body {
     -apple-system,
     sans-serif;
   -webkit-font-smoothing: antialiased;
+  scrollbar-gutter: stable;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
 }

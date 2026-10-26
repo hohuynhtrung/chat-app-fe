@@ -16,8 +16,8 @@ const ChatbotMessages = ({
   }, [messages, sendingMessage]);
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4 py-6 dark:bg-gray-950 sm:px-6">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+    <div className="min-h-0 flex-1 overflow-y-auto bg-white p-4 dark:bg-gray-950 sm:px-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
         {loadingMessages && (
           <div className="flex flex-col items-center justify-center gap-3 py-16">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900" />

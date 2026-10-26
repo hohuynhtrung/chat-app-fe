@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import MessageItem from "./MessageItem";
+import MessageItem from "../MessageItem";
 import { getMessageDate } from "@/utils/messageTime";
 
 function MessageList({ messages, currentUserId, loading, conversationId }) {
