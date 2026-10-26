@@ -26,9 +26,9 @@ const ChatbotInput = ({ onSend, sendingMessage }) => {
   };
 
   return (
-    <div className="shrink-0  border-gray-200 bg-white px-2 py-2 dark:border-gray-800 dark:bg-gray-950 sm:px-6">
+    <div className="shrink-0 border-gray-200 bg-white px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] dark:border-gray-800 dark:bg-gray-950 sm:px-6 sm:pb-2">
       <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
-        <div className="flex items-end gap-3 rounded-2xl border border-gray-200 bg-white p-2  transition focus-within:border-gray-400 focus-within:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:focus-within:border-gray-500">
+        <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-white p-1.5 transition focus-within:border-gray-400 focus-within:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:focus-within:border-gray-500 sm:gap-3 sm:p-2">
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
@@ -37,14 +37,14 @@ const ChatbotInput = ({ onSend, sendingMessage }) => {
             maxLength={2000}
             rows={1}
             disabled={sendingMessage}
-            className="max-h-40 min-h-11 flex-1 resize-none bg-transparent px-2 py-2 text-[13px] text-gray-800 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed dark:text-gray-100 dark:placeholder:text-gray-500"
+            className="max-h-40 min-h-10 min-w-0 flex-1 resize-none bg-transparent px-1.5 py-2 text-[13px] text-gray-800 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed sm:min-h-11 sm:px-2 dark:text-gray-100 dark:placeholder:text-gray-500"
           />
 
           <button
             type="submit"
             disabled={!input.trim() || sendingMessage}
             aria-label="Gửi tin nhắn"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-300 sm:h-10 sm:w-10 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
           >
             {sendingMessage ? (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -67,7 +67,7 @@ const ChatbotInput = ({ onSend, sendingMessage }) => {
           </button>
         </div>
 
-        <p className="mt-2 text-center text-[10px] text-gray-400 dark:text-gray-500">
+        <p className="mt-1.5 px-2 text-center text-[10px] leading-4 text-gray-400 sm:mt-2 dark:text-gray-500">
           AI có thể đưa ra thông tin chưa chính xác. Hãy kiểm tra lại những
           thông tin quan trọng.
         </p>

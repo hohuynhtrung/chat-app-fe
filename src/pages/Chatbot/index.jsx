@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import ChatbotMessages from "@/pages/Chatbot/components/ChatbotMessage";
 import ChatbotInput from "@/pages/Chatbot/components/ChatbotInput";
 
 import { clearChatbotError } from "@/features/chatbot/chatbotSlice";
+import pusher from "@/libs/pusher";
 
 import {
   getChatbotMessages,
@@ -14,18 +15,72 @@ import Header from "@/layouts/DefaultLayout/components/Header";
 
 const Chatbot = () => {
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
   const { messages, loadingMessages, sendingMessage, error } = useSelector(
     (state) => state.chatbot,
   );
+  const [thinkingSteps, setThinkingSteps] = useState([]);
+  const activeRequestIdRef = useRef(null);
 
   useEffect(() => {
     dispatch(getChatbotMessages(20));
   }, [dispatch]);
 
-  const handleSendMessage = (content) => {
+  useEffect(() => {
+    if (!currentUser?.id) return undefined;
+
+    const channelName = `agent-${currentUser.id}`;
+    const channel = pusher.subscribe(channelName);
+
+    const handleThinking = (event) => {
+      if (
+        event?.requestId !== activeRequestIdRef.current ||
+        typeof event.thinking !== "string" ||
+        !event.thinking
+      ) {
+        return;
+      }
+
+      setThinkingSteps((steps) => [
+        ...steps,
+        {
+          id: `${event.requestId}-${event.step}`,
+          content: event.thinking,
+        },
+      ]);
+    };
+
+    const handleComplete = (event) => {
+      if (event?.requestId !== activeRequestIdRef.current) return;
+
+      activeRequestIdRef.current = null;
+      setThinkingSteps([]);
+    };
+
+    channel.bind("agent:thinking", handleThinking);
+    channel.bind("agent:complete", handleComplete);
+
+    return () => {
+      activeRequestIdRef.current = null;
+      channel.unbind("agent:thinking", handleThinking);
+      channel.unbind("agent:complete", handleComplete);
+      pusher.unsubscribe(channelName);
+    };
+  }, [currentUser?.id]);
+
+  const handleSendMessage = async (content) => {
     dispatch(clearChatbotError());
-    dispatch(sendChatbotMessage(content));
+    const requestId = crypto.randomUUID();
+    activeRequestIdRef.current = requestId;
+    setThinkingSteps([]);
+
+    await dispatch(sendChatbotMessage({ input: content, requestId }));
+
+    if (activeRequestIdRef.current === requestId) {
+      activeRequestIdRef.current = null;
+      setThinkingSteps([]);
+    }
   };
 
   return (
@@ -54,6 +109,7 @@ const Chatbot = () => {
         messages={messages}
         loadingMessages={loadingMessages}
         sendingMessage={sendingMessage}
+        thinkingSteps={thinkingSteps}
       />
 
       <ChatbotInput

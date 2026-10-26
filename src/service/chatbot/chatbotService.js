@@ -39,10 +39,14 @@ export const getChatbotMessages = createAsyncThunk(
 // Gửi tin nhắn cho AI
 export const sendChatbotMessage = createAsyncThunk(
   "chatbot/sendMessage",
-  async (input, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
+      const input = typeof payload === "string" ? payload : payload?.input;
+      const requestId =
+        typeof payload === "string" ? undefined : payload?.requestId;
+
       const message = unwrapResponse(
-        await http.post("/agentMessage/chat", { input }),
+        await http.post("/agentMessage/chat", { input, requestId }),
       );
 
       if (!message?.id || typeof message.content !== "string") {

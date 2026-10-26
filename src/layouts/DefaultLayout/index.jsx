@@ -7,11 +7,9 @@ function DefaultLayout() {
 
   return (
     <div className="relative min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-      {pathname !== ROUTES.CHATBOT && (
-        <div className="fixed top-2.75 right-4 z-9999">
-          <ThemeToggle />
-        </div>
-      )}
+      <div className="fixed top-2.75 right-4 z-9999">
+        <ThemeToggle />
+      </div>
 
       <main>
         <Outlet />

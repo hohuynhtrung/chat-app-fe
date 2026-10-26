@@ -58,7 +58,10 @@ export const chatbotSlice = createSlice({
 
       // Gửi tin nhắn
       .addCase(sendChatbotMessage.pending, (state, action) => {
-        const input = action.meta.arg;
+        const input =
+          typeof action.meta.arg === "string"
+            ? action.meta.arg
+            : action.meta.arg.input;
 
         state.sendingMessage = true;
         state.error = null;

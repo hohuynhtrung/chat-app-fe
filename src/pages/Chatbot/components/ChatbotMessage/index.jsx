@@ -1,19 +1,64 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatbotMessageItem from "@/pages/Chatbot/components/ChatbotMessageItem";
+
+const ThinkingText = ({ content, animate }) => {
+  const [visibleLength, setVisibleLength] = useState(0);
+
+  useEffect(() => {
+    if (!animate) return undefined;
+
+    let length = 0;
+    const timer = setInterval(() => {
+      length += 1;
+      setVisibleLength(length);
+
+      if (length >= content.length) {
+        clearInterval(timer);
+      }
+    }, 18);
+
+    return () => clearInterval(timer);
+  }, [animate, content]);
+
+  return (
+    <>
+      {animate ? content.slice(0, visibleLength) : content}
+      {animate && visibleLength < content.length && (
+        <span
+          aria-hidden="true"
+          className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-current align-middle"
+        />
+      )}
+    </>
+  );
+};
 
 const ChatbotMessages = ({
   messages = [],
   loadingMessages,
   sendingMessage,
+  thinkingSteps = [],
 }) => {
   const bottomRef = useRef(null);
+  const thinkingWindowRef = useRef(null);
+
+  useEffect(() => {
+    const thinkingWindow = thinkingWindowRef.current;
+
+    if (thinkingWindow) {
+      thinkingWindow.scrollTo({
+        top: thinkingWindow.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [thinkingSteps]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "end",
     });
-  }, [messages, sendingMessage]);
+  }, [messages, sendingMessage, thinkingSteps]);
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto bg-white p-4 dark:bg-gray-950 sm:px-6">
@@ -83,7 +128,36 @@ const ChatbotMessages = ({
             <ChatbotMessageItem key={message.id} message={message} />
           ))}
 
-        {sendingMessage && (
+        {sendingMessage && thinkingSteps.length > 0 && (
+          <div className="flex items-start gap-3" aria-live="polite">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-[11px] font-semibold text-white dark:bg-gray-100 dark:text-gray-900">
+              AI
+            </div>
+
+            <div
+              ref={thinkingWindowRef}
+              className="max-h-48 max-w-[85%] space-y-2 overflow-y-auto rounded-2xl rounded-bl-md border border-gray-100 bg-gray-50 px-4 py-3 text-[13px] leading-6 text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+            >
+              {thinkingSteps.map((step, index) => (
+                <p
+                  key={step.id}
+                  className={`whitespace-pre-wrap wrap-break-word transition-opacity duration-300 ${
+                    index === thinkingSteps.length - 1
+                      ? "opacity-100"
+                      : "opacity-40"
+                  }`}
+                >
+                  <ThinkingText
+                    content={step.content}
+                    animate={index === thinkingSteps.length - 1}
+                  />
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {sendingMessage && thinkingSteps.length === 0 && (
           <div className="flex items-start gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-[11px] font-semibold text-white dark:bg-gray-100 dark:text-gray-900">
               AI

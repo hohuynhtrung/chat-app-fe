@@ -58,7 +58,7 @@ const markdownComponents = {
   ),
   hr: () => <hr className="my-3 border-gray-200 dark:border-gray-700" />,
   pre: ({ children }) => (
-    <pre className="my-3 overflow-x-auto rounded-xl bg-gray-200 p-4 text-left text-gray-100 [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-black">
+    <pre className="my-3 max-w-full overflow-x-auto rounded-xl bg-gray-200 p-3 text-left text-gray-100 sm:p-4 [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-black">
       {children}
     </pre>
   ),
@@ -74,7 +74,7 @@ const markdownComponents = {
     );
   },
   table: ({ children }) => (
-    <div className="my-3 overflow-x-auto">
+    <div className="my-3 max-w-full overflow-x-auto">
       <table className="min-w-full border-collapse text-left text-xs">
         {children}
       </table>
@@ -97,7 +97,7 @@ const ChatbotMessageItem = ({ message }) => {
 
   return (
     <div
-      className={`flex w-full gap-2 ${
+      className={`flex w-full min-w-0 gap-2 ${
         isUser ? "justify-end" : "justify-start"
       }`}
     >
@@ -108,14 +108,14 @@ const ChatbotMessageItem = ({ message }) => {
       )}
 
       <div
-        className={`flex max-w-[85%] flex-col sm:max-w-[75%] ${
+        className={`flex min-w-0 max-w-[calc(100%-2.5rem)] flex-col sm:max-w-[85%] lg:max-w-[75%] ${
           isUser ? "items-end" : "items-start"
         }`}
       >
         <div
-          className={`rounded-2xl px-3 py-2 text-[13px] leading-7 ${
+          className={`max-w-full rounded-2xl px-3 py-2 text-[13px] leading-6 sm:leading-7 ${
             isUser
-              ? "rounded-br-md bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
+              ? "rounded-br-md bg-gray-900 text-white dark:bg-gray-900 dark:text-gray-100"
               : "rounded-bl-md border border-gray-100 bg-gray-50 text-gray-800 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
           }`}
         >
