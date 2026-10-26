@@ -87,9 +87,8 @@ export const chatSlice = createSlice({
         state.loadingMessages = false;
         state.messagesRequestId = null;
       })
-      .addCase(createDmConversation.rejected, (state, action) => {
+      .addCase(createDmConversation.rejected, (state) => {
         state.creatingConversation = false;
-        state.error = action.payload || action.error.message;
       })
 
       .addCase(getMessages.pending, (state, action) => {

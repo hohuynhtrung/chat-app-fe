@@ -1,4 +1,5 @@
 function ConversationList({
+  className = "",
   conversations,
   activeConversation,
   loading,
@@ -7,8 +8,10 @@ function ConversationList({
   onNewChat,
 }) {
   return (
-    <div className="flex w-1/3 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-      <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+    <div
+      className={`${className} w-full flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:w-1/3 md:min-w-64`}
+    >
+      <div className="flex items-center justify-between gap-2 border-b border-gray-200 px-4 py-4 dark:border-gray-800 sm:px-5">
         <h2 className="text-base font-bold text-gray-900 dark:text-white">
           Đoạn chat
         </h2>
@@ -16,7 +19,7 @@ function ConversationList({
         <button
           type="button"
           onClick={onNewChat}
-          className="cursor-pointer rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-indigo-700 dark:hover:bg-indigo-500"
+          className="shrink-0 cursor-pointer rounded-xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-indigo-700 sm:px-3.5 dark:hover:bg-indigo-500"
         >
           + Tin nhắn mới
         </button>

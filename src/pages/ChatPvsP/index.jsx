@@ -50,6 +50,8 @@ function ChatPvsP() {
   const [newMessage, setNewMessage] = useState("");
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [otherUserId, setOtherUserId] = useState("");
+  const [newChatError, setNewChatError] = useState("");
+  const [showConversationList, setShowConversationList] = useState(true);
 
   // Lấy danh sách hội thoại khi vào trang
   useEffect(() => {
@@ -114,17 +116,26 @@ function ChatPvsP() {
 
     const userId = otherUserId.trim();
 
-    if (!userId || creatingConversation) return;
-
-    if (userId === currentUser?.id) {
+    if (!userId || creatingConversation) {
       return;
     }
 
+    if (userId === currentUser?.id) {
+      setNewChatError("Bạn không thể tạo đoạn chat với chính mình.");
+      return;
+    }
+
+    setNewChatError("");
     const action = await dispatch(createDmConversation(userId));
 
     if (createDmConversation.fulfilled.match(action)) {
       setShowNewChatModal(false);
       setOtherUserId("");
+      setShowConversationList(false);
+    } else {
+      setNewChatError(
+        action.payload || action.error.message || "Không thể tạo đoạn chat.",
+      );
     }
   };
 
@@ -132,6 +143,7 @@ function ChatPvsP() {
   const handleCloseNewChat = () => {
     setShowNewChatModal(false);
     setOtherUserId("");
+    setNewChatError("");
   };
 
   // Lấy tên hội thoại
@@ -148,24 +160,38 @@ function ChatPvsP() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+    <div className="flex h-dvh flex-col bg-white dark:bg-gray-950">
       <Header />
 
-      <div className="flex h-[calc(100vh-65px)] w-full overflow-hidden bg-white dark:bg-gray-900">
+      <div className="flex min-h-0 w-full flex-1 overflow-hidden bg-white dark:bg-gray-900">
         {/* DANH SÁCH HỘI THOẠI */}
         <ConversationList
+          className={
+            activeConversation && !showConversationList
+              ? "hidden md:flex"
+              : "flex"
+          }
           conversations={safeConversations}
           activeConversation={activeConversation}
           loading={loadingConversations}
           getDisplayName={getConversationDisplayName}
           onSelectConversation={(conversation) => {
             dispatch(setActiveConversation(conversation));
+            setShowConversationList(false);
           }}
           onNewChat={() => setShowNewChatModal(true)}
         />
 
         {/* KHUNG CHAT */}
-        <div className="flex min-w-0 flex-1 flex-col bg-gray-50/50 dark:bg-gray-950">
+        <div
+          className={`min-w-0 flex-1 flex-col bg-gray-50/50 dark:bg-gray-950 ${
+            showConversationList && activeConversation
+              ? "hidden md:flex"
+              : activeConversation
+                ? "flex"
+                : "hidden md:flex"
+          }`}
+        >
           {error && (
             <div
               role="alert"
@@ -181,6 +207,7 @@ function ChatPvsP() {
               <ChatHeader
                 conversation={activeConversation}
                 getDisplayName={getConversationDisplayName}
+                onBack={() => setShowConversationList(true)}
               />
 
               {/* DANH SÁCH TIN NHẮN */}
@@ -210,10 +237,14 @@ function ChatPvsP() {
         <NewChatModal
           open={showNewChatModal}
           userId={otherUserId}
-          onUserIdChange={setOtherUserId}
+          onUserIdChange={(value) => {
+            setOtherUserId(value);
+            setNewChatError("");
+          }}
           onSubmit={handleCreateDm}
           onClose={handleCloseNewChat}
           creating={creatingConversation}
+          error={newChatError}
         />
       </div>
     </div>

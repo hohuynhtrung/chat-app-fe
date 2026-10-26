@@ -30,11 +30,11 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md px-4 py-3.5 dark:border-gray-800 dark:bg-gray-900/80">
-      <div className="mx-auto flex max-w-5xl items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="mx-auto flex min-w-0 max-w-5xl items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Link
             to={ROUTES.HOME}
-            className="flex items-center gap-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white"
+            className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm">
               💬
@@ -62,10 +62,10 @@ function Header() {
           )}
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-4">
           {currentUser ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+              <span className="max-w-24 truncate text-xs font-medium text-gray-700 sm:max-w-none sm:text-sm dark:text-gray-300">
                 Xin chào,{" "}
                 <strong className="font-semibold text-indigo-600 dark:text-indigo-400">
                   {currentUser.username}
