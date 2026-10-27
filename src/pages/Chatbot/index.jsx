@@ -37,6 +37,7 @@ const Chatbot = () => {
     error,
   } = useSelector((state) => state.chatbot);
   const [thinkingSteps, setThinkingSteps] = useState([]);
+  const [fileOperations, setFileOperations] = useState([]);
   const [renamingConversationId, setRenamingConversationId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(() =>
@@ -106,13 +107,46 @@ const Chatbot = () => {
       setThinkingSteps([]);
     };
 
+    const handleFileOperation = (event) => {
+      if (
+        event?.requestId !== activeRequestIdRef.current ||
+        !["readFile", "writeFile"].includes(event.action) ||
+        !["started", "completed"].includes(event.status) ||
+        typeof event.path !== "string"
+      ) {
+        return;
+      }
+
+      const operation = {
+        id: `${event.requestId}-${event.step}`,
+        action: event.action,
+        path: event.path,
+        status: event.status,
+        success: event.success,
+      };
+
+      setFileOperations((operations) => {
+        const existingIndex = operations.findIndex(
+          (item) => item.id === operation.id,
+        );
+
+        if (existingIndex === -1) return [...operations, operation];
+
+        return operations.map((item, index) =>
+          index === existingIndex ? operation : item,
+        );
+      });
+    };
+
     channel.bind("agent:thinking", handleThinking);
     channel.bind("agent:complete", handleComplete);
+    channel.bind("agent:file-operation", handleFileOperation);
 
     return () => {
       activeRequestIdRef.current = null;
       channel.unbind("agent:thinking", handleThinking);
       channel.unbind("agent:complete", handleComplete);
+      channel.unbind("agent:file-operation", handleFileOperation);
       pusher.unsubscribe(channelName);
     };
   }, [currentUser?.id]);
@@ -126,6 +160,7 @@ const Chatbot = () => {
 
       activeRequestIdRef.current = null;
       setThinkingSteps([]);
+      setFileOperations([]);
       dispatch(setActiveAgentConversation(conversationId));
       dispatch(getAgentConversationMessages(conversationId));
       setIsSidebarOpen(false);
@@ -136,6 +171,7 @@ const Chatbot = () => {
   const handleNewConversation = async () => {
     activeRequestIdRef.current = null;
     setThinkingSteps([]);
+    setFileOperations([]);
     dispatch(setActiveAgentConversation(null));
     setIsSidebarOpen(false);
   };
@@ -173,6 +209,7 @@ const Chatbot = () => {
 
     activeRequestIdRef.current = null;
     setThinkingSteps([]);
+    setFileOperations([]);
 
     if (remainingConversations.length > 0) {
       selectConversation(remainingConversations[0].id);
@@ -190,6 +227,7 @@ const Chatbot = () => {
     const requestId = crypto.randomUUID();
     activeRequestIdRef.current = requestId;
     setThinkingSteps([]);
+    setFileOperations([]);
 
     let conversationId = activeConversationId;
 
@@ -474,6 +512,7 @@ const Chatbot = () => {
             loadingMessages={loadingMessages}
             sendingMessage={sendingMessage}
             thinkingSteps={thinkingSteps}
+            fileOperations={fileOperations}
           />
 
           <ChatbotInput

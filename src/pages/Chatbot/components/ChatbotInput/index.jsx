@@ -68,8 +68,8 @@ const ChatbotInput = ({ onSend, sendingMessage }) => {
         </div>
 
         <p className="mt-1.5 px-2 text-center text-[10px] leading-4 text-gray-400 sm:mt-2 dark:text-gray-500">
-          AI có thể đưa ra thông tin chưa chính xác. Hãy kiểm tra lại những
-          thông tin quan trọng.
+          Có thể yêu cầu AI đọc/ghi file trong thư mục dự án. AI đôi khi đưa ra
+          thông tin chưa chính xác; hãy kiểm tra lại nội dung file quan trọng.
         </p>
       </form>
     </div>
