@@ -1,5 +1,8 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
+const API_BASE_URL = (import.meta.env.VITE_BASE_API || "").replace(/\/+$/, "");
+
 const formatTime = (value) => {
   if (!value) return "";
 
@@ -51,6 +54,20 @@ const markdownComponents = {
       {children}
     </a>
   ),
+  img: ({ src, alt }) => {
+    const imageSrc = src?.startsWith("generated-images/")
+      ? `${API_BASE_URL ? `${API_BASE_URL}/` : "/api/"}${src}`
+      : src;
+
+    return (
+      <img
+        src={imageSrc}
+        alt={alt || "Ảnh được tạo"}
+        loading="lazy"
+        className="my-2 h-auto max-h-128 max-w-full rounded-xl object-contain"
+      />
+    );
+  },
   blockquote: ({ children }) => (
     <blockquote className="my-2 border-l-2 border-gray-300 pl-3 text-gray-600 dark:border-gray-600 dark:text-gray-300">
       {children}
