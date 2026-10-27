@@ -12,15 +12,94 @@ const unwrapResponse = (response) => {
 const getErrorMessage = (error, fallback) =>
   error?.response?.data?.message || error?.message || fallback;
 
-// Lấy lịch sử trò chuyện
-export const getChatbotMessages = createAsyncThunk(
-  "chatbot/getMessages",
-  async (limit = 20, { rejectWithValue }) => {
+export const getAgentConversations = createAsyncThunk(
+  "chatbot/getConversations",
+  async (_, { rejectWithValue }) => {
+    try {
+      const conversations = unwrapResponse(await http.get("/conversations"));
+
+      if (!Array.isArray(conversations)) {
+        throw new Error("Danh sách cuộc trò chuyện không hợp lệ");
+      }
+
+      return conversations;
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Không thể tải danh sách cuộc trò chuyện"),
+      );
+    }
+  },
+);
+
+export const createAgentConversation = createAsyncThunk(
+  "chatbot/createConversation",
+  async (_, { rejectWithValue }) => {
+    try {
+      const conversation = unwrapResponse(await http.post("/conversations", {}));
+
+      if (!conversation?.id) {
+        throw new Error("Dữ liệu cuộc trò chuyện mới không hợp lệ");
+      }
+
+      return conversation;
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Không thể tạo cuộc trò chuyện mới"),
+      );
+    }
+  },
+);
+
+export const renameAgentConversation = createAsyncThunk(
+  "chatbot/renameConversation",
+  async ({ id, name }, { rejectWithValue }) => {
+    try {
+      const conversation = unwrapResponse(
+        await http.patch(`/conversations/${encodeURIComponent(id)}`, { name }),
+      );
+
+      if (conversation?.id !== id || typeof conversation.name !== "string") {
+        throw new Error("Dữ liệu cuộc trò chuyện không hợp lệ");
+      }
+
+      return conversation;
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Không thể đổi tên cuộc trò chuyện"),
+      );
+    }
+  },
+);
+
+export const deleteAgentConversation = createAsyncThunk(
+  "chatbot/deleteConversation",
+  async (id, { rejectWithValue }) => {
+    try {
+      const result = unwrapResponse(
+        await http.del(`/conversations/${encodeURIComponent(id)}`),
+      );
+
+      if (result?.id !== id) {
+        throw new Error("Phản hồi xóa cuộc trò chuyện không hợp lệ");
+      }
+
+      return result;
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Không thể xóa cuộc trò chuyện"),
+      );
+    }
+  },
+);
+
+export const getAgentConversationMessages = createAsyncThunk(
+  "chatbot/getConversationMessages",
+  async (conversationId, { rejectWithValue }) => {
     try {
       const messages = unwrapResponse(
-        await http.get("/agentMessage/messages", {
-          params: { limit },
-        }),
+        await http.get(
+          `/conversations/${encodeURIComponent(conversationId)}/messages`,
+        ),
       );
 
       if (!Array.isArray(messages)) {
@@ -36,20 +115,23 @@ export const getChatbotMessages = createAsyncThunk(
   },
 );
 
-// Gửi tin nhắn cho AI
 export const sendChatbotMessage = createAsyncThunk(
   "chatbot/sendMessage",
   async (payload, { rejectWithValue }) => {
     try {
-      const input = typeof payload === "string" ? payload : payload?.input;
-      const requestId =
-        typeof payload === "string" ? undefined : payload?.requestId;
-
       const message = unwrapResponse(
-        await http.post("/agentMessage/chat", { input, requestId }),
+        await http.post("/agentMessage/chat", {
+          input: payload.input,
+          requestId: payload.requestId,
+          conversationId: payload.conversationId,
+        }),
       );
 
-      if (!message?.id || typeof message.content !== "string") {
+      if (
+        !message?.id ||
+        typeof message.content !== "string" ||
+        message.conversationId !== payload.conversationId
+      ) {
         throw new Error("Dữ liệu tin nhắn từ AI không hợp lệ");
       }
 
